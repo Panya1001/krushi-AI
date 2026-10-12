@@ -8,7 +8,6 @@ import {
   MapPin, 
   ArrowRight, 
   ShieldCheck, 
-  Sparkles,
   KeyRound
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -24,19 +23,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { language } = useLanguage();
 
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot' | 'otp'>('login');
-  const [phone, setPhone] = useState('9822481920');
+  const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
-  const [district, setDistrict] = useState('Nashik');
-  const [landAcres, setLandAcres] = useState('5.0');
+  const [district, setDistrict] = useState('');
+  const [landAcres, setLandAcres] = useState('');
   const [otp, setOtp] = useState(['4', '8', '2', '1']);
   const [otpSent, setOtpSent] = useState(false);
 
   if (!isOpen) return null;
-
-  const handleQuickDemoLogin = (roleKey: 'farmer_mh' | 'farmer_pb' | 'admin') => {
-    login(roleKey);
-    onClose();
-  };
 
   const handlePhoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,14 +40,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleOtpVerify = (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanPhone = phone.trim();
     loginCustom({
-      name: name || 'Kisan Bandhu',
-      phone: `+91 ${phone}`,
-      district: district,
+      name: name.trim() || (cleanPhone ? `शेतकरी (${cleanPhone.slice(-4)})` : 'शेतकरी मित्र'),
+      phone: cleanPhone.startsWith('+91') ? cleanPhone : `+91 ${cleanPhone}`,
+      district: district.trim() || 'Maharashtra',
       landSizeAcres: parseFloat(landAcres) || 4.0,
       state: 'Maharashtra',
       village: 'Grampanchayat',
-      role: 'farmer'
+      role: 'farmer',
+      avatar: ''
     });
     onClose();
   };
@@ -82,37 +78,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           </p>
         </div>
 
-        {/* Instant 1-Click Demo Presets Bar */}
-        <div className="bg-emerald-50/70 p-4 border-b border-emerald-100">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Hackathon Quick 1-Click Demo Profiles:</span>
-          </div>
-          <div className="grid grid-cols-1 gap-2">
-            <button
-              onClick={() => handleQuickDemoLogin('farmer_mh')}
-              className="px-3 py-2 rounded-xl bg-white hover:bg-emerald-100/60 text-slate-800 border border-emerald-200 text-xs font-semibold flex items-center justify-between transition-all shadow-xs cursor-pointer text-left"
-            >
-              <span>👨‍🌾 <strong>Ramesh Patil</strong> (Maharashtra, 5.5 Ac)</span>
-              <span className="text-emerald-700 text-[11px] font-bold">Auto-Login →</span>
-            </button>
-            <button
-              onClick={() => handleQuickDemoLogin('farmer_pb')}
-              className="px-3 py-2 rounded-xl bg-white hover:bg-emerald-100/60 text-slate-800 border border-emerald-200 text-xs font-semibold flex items-center justify-between transition-all shadow-xs cursor-pointer text-left"
-            >
-              <span>🌾 <strong>Gurpreet Singh</strong> (Punjab, 8.0 Ac)</span>
-              <span className="text-emerald-700 text-[11px] font-bold">Auto-Login →</span>
-            </button>
-            <button
-              onClick={() => handleQuickDemoLogin('admin')}
-              className="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-between transition-all shadow-xs cursor-pointer text-left"
-            >
-              <span>🛡️ <strong>Dr. Swati Kulkarni</strong> (Agri Admin Officer)</span>
-              <span className="text-emerald-300 text-[11px] font-bold">Admin Console →</span>
-            </button>
-          </div>
-        </div>
-
         {/* Regular Auth Forms */}
         <div className="p-6">
           {mode === 'login' && (
@@ -135,7 +100,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="98224 81920"
+                    placeholder="Enter 10-digit mobile number"
                     className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <Smartphone className="w-4 h-4 text-slate-400 absolute right-3 top-3" />
@@ -172,7 +137,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Ramesh Balasaheb Patil"
+                  placeholder="Enter farmer full name"
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
@@ -184,7 +149,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   required
                   value={district}
                   onChange={(e) => setDistrict(e.target.value)}
-                  placeholder="e.g. Nashik / Niphad"
+                  placeholder="Enter district / taluka"
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
@@ -197,7 +162,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     step="0.5"
                     value={landAcres}
                     onChange={(e) => setLandAcres(e.target.value)}
-                    placeholder="5.0"
+                    placeholder="e.g. 5.0"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
@@ -208,7 +173,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="98224..."
+                    placeholder="Enter 10-digit mobile number"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>

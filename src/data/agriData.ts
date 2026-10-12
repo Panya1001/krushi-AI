@@ -13,7 +13,7 @@ export const demoUsers: Record<string, User> = {
     landSizeAcres: 5.5,
     soilType: 'Medium Black (काळी माती)',
     primaryCrops: ['Soybean', 'Onion', 'Sugarcane', 'Tomato'],
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
   },
   farmer_pb: {
     id: 'farmer_02',
@@ -27,7 +27,7 @@ export const demoUsers: Record<string, User> = {
     landSizeAcres: 8.0,
     soilType: 'Alluvial Loam (दोमट मिट्टी)',
     primaryCrops: ['Wheat', 'Basmati Rice', 'Mustard'],
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
   },
   admin: {
     id: 'admin_01',
@@ -41,7 +41,7 @@ export const demoUsers: Record<string, User> = {
     landSizeAcres: 0,
     soilType: 'State Agricultural Specialist',
     primaryCrops: [],
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+    avatar: '',
   }
 };
 

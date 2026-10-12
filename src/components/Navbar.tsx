@@ -19,6 +19,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { Language } from '../types';
+import { UserAvatar } from './UserAvatar';
 
 interface NavbarProps {
   activeTab: string;
@@ -36,7 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenMitra,
 }) => {
   const { language, setLanguage, t } = useLanguage();
-  const { user, logout, login } = useAuth();
+  const { user, logout } = useAuth();
   const { unreadCount } = useNotifications();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
@@ -233,15 +234,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setDemoDropdownOpen(!demoDropdownOpen)}
                   className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-emerald-50/80 hover:bg-emerald-100/80 text-emerald-950 border border-emerald-200 transition-all cursor-pointer"
                 >
-                  <img
-                    src={user.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100'}
-                    alt={user.name}
-                    className="w-7 h-7 rounded-lg object-cover ring-1 ring-emerald-500/50"
+                  <UserAvatar
+                    name={user.name}
+                    avatar={user.avatar}
+                    className="w-7 h-7 rounded-lg ring-1 ring-emerald-500/50"
+                    textClassName="text-[10px]"
+                    iconClassName="w-3.5 h-3.5"
                   />
                   <div className="text-left hidden md:block">
                     <p className="text-xs font-bold leading-none line-clamp-1 text-slate-800">{user.name.split(' ')[0]}</p>
                     <p className="text-[10px] text-emerald-700 font-medium">
-                      {user.role === 'admin' ? 'Agri Admin' : `${user.district} (${user.landSizeAcres} Ac)`}
+                      {user.role === 'admin' ? 'Agri Admin' : user.district ? `${user.district} (${user.landSizeAcres} Ac)` : `${user.landSizeAcres} Ac Farm`}
                     </p>
                   </div>
                   <ChevronDown className="w-3 h-3 text-emerald-700 hidden md:block" />
@@ -254,41 +257,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <div className="px-3 py-2 border-b border-slate-100 text-xs">
                       <p className="font-bold text-slate-900">{user.name}</p>
-                      <p className="text-[11px] text-slate-500">{user.email}</p>
+                      {user.phone && <p className="text-[11px] text-emerald-700 font-medium">{user.phone}</p>}
+                      {user.email && <p className="text-[11px] text-slate-500">{user.email}</p>}
                     </div>
 
-                    <div className="py-1">
-                      <p className="text-[10px] font-bold text-slate-400 px-3 uppercase tracking-wider py-1">Quick Demo Switch</p>
-                      <button
-                        onClick={() => { login('farmer_mh'); setDemoDropdownOpen(false); }}
-                        className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center justify-between"
-                      >
-                        <span>👨‍🌾 Ramesh Patil (MH Farmer)</span>
-                      </button>
-                      <button
-                        onClick={() => { login('farmer_pb'); setDemoDropdownOpen(false); }}
-                        className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center justify-between"
-                      >
-                        <span>🌾 Gurpreet Singh (PB Farmer)</span>
-                      </button>
-                      <button
-                        onClick={() => { login('admin'); setDemoDropdownOpen(false); }}
-                        className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center justify-between"
-                      >
-                        <span>🛡️ Dr. Swati (Admin Officer)</span>
-                      </button>
-                    </div>
-
-                    <div className="border-t border-slate-100 pt-1">
+                    <div className="pt-1">
                       <button
                         onClick={() => { handleNavClick('profile'); setDemoDropdownOpen(false); }}
-                        className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
+                        className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 hover:bg-emerald-50 cursor-pointer"
                       >
                         {t.nav.profile}
                       </button>
                       <button
                         onClick={() => { logout(); setDemoDropdownOpen(false); }}
-                        className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                        className="w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 cursor-pointer"
                       >
                         {t.nav.logout}
                       </button>

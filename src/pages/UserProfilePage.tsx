@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   User as UserIcon, 
   MapPin, 
@@ -12,15 +12,18 @@ import {
   ShieldCheck, 
   ExternalLink,
   Layers,
-  ChevronRight
+  ChevronRight,
+  Camera
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { UserAvatar } from '../components/UserAvatar';
 
 export const UserProfilePage: React.FC = () => {
   const { language } = useLanguage();
   const { user, updateProfile, savedScans, removeScan } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -52,6 +55,26 @@ export const UserProfilePage: React.FC = () => {
     setTimeout(() => setSavedSuccess(false), 2500);
   };
 
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 3 * 1024 * 1024) {
+        alert('Please choose an image under 3MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        updateProfile({ avatar: base64 });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    updateProfile({ avatar: '' });
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
       {/* Header */}
@@ -72,17 +95,57 @@ export const UserProfilePage: React.FC = () => {
         {/* Left Column: Edit Farmer Details Form (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           <form onSubmit={handleSave} className="glass-card p-6 sm:p-7 rounded-3xl border border-slate-200/90 bg-white space-y-4">
-            <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
-              <img
-                src={user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120'}
-                alt="Profile"
-                className="w-14 h-14 rounded-2xl object-cover ring-2 ring-emerald-500 shadow-md"
+            <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleAvatarUpload}
+                accept="image/*"
+                className="hidden"
               />
-              <div>
-                <h3 className="font-extrabold text-sm text-slate-900">{user?.name}</h3>
-                <span className="text-[10px] text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
-                  {user?.role === 'admin' ? 'State Agri Admin' : 'Verified Farmer (शेतकरी)'}
-                </span>
+              <div className="relative group shrink-0">
+                <UserAvatar
+                  name={user?.name || name}
+                  avatar={user?.avatar}
+                  className="w-16 h-16 rounded-2xl ring-2 ring-emerald-500 shadow-md"
+                  textClassName="text-xl"
+                  iconClassName="w-8 h-8"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute -bottom-1.5 -right-1.5 p-1.5 bg-white hover:bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200 shadow-xs cursor-pointer transition-transform hover:scale-110"
+                  title="Upload / Change Photo"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold text-sm text-slate-900">{user?.name || name || 'शेतकरी'}</h3>
+                  {user?.avatar && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveAvatar}
+                      className="text-[10px] text-rose-500 hover:text-rose-700 hover:underline cursor-pointer font-medium"
+                      title="Remove profile photo"
+                    >
+                      {language === 'mr' ? 'फोटो काढा' : 'Remove Photo'}
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
+                    {user?.role === 'admin' ? 'State Agri Admin' : 'Verified Farmer (शेतकरी)'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[10px] text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer font-semibold"
+                  >
+                    {language === 'mr' ? 'फोटो निवडा' : 'Choose photo'}
+                  </button>
+                </div>
               </div>
             </div>
 

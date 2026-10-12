@@ -20,12 +20,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const saved = localStorage.getItem('krishiai_user');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.avatar && parsed.avatar.includes('unsplash.com')) {
+          parsed.avatar = '';
+        }
+        return parsed;
       } catch (e) {
         // fallback
       }
     }
-    // Default to Ramesh Patil (Maharashtra farmer) so hackathon demo is immediately populated!
     return demoUsers.farmer_mh;
   });
 
@@ -60,18 +63,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginCustom = (custom: Partial<User>) => {
     const newUser: User = {
-      id: 'custom_' + Date.now(),
-      name: custom.name || 'Prashant More',
-      email: custom.email || 'farmer@krishiai.org',
-      phone: custom.phone || '+91 99887 76655',
+      id: 'farmer_' + Date.now(),
+      name: custom.name || 'शेतकरी मित्र',
+      email: custom.email || '',
+      phone: custom.phone || '',
       role: custom.role || 'farmer',
       state: custom.state || 'Maharashtra',
-      district: custom.district || 'Pune',
-      village: custom.village || 'Baramati',
+      district: custom.district || '',
+      village: custom.village || '',
       landSizeAcres: custom.landSizeAcres || 4.0,
-      soilType: custom.soilType || 'Black Soil',
+      soilType: custom.soilType || 'Medium Black (काळी माती)',
       primaryCrops: custom.primaryCrops || ['Soybean', 'Sugarcane'],
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+      avatar: (custom.avatar && !custom.avatar.includes('unsplash.com')) ? custom.avatar : '',
     };
     setUser(newUser);
   };
@@ -82,6 +85,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateProfile = (updated: Partial<User>) => {
     if (!user) return;
+    if (updated.avatar && updated.avatar.includes('unsplash.com')) {
+      updated.avatar = '';
+    }
     setUser({ ...user, ...updated });
   };
 

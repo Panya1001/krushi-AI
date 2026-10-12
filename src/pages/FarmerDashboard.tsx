@@ -21,6 +21,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { mockWeatherData, mockSoilData, initialMandiPrices, initialGovtSchemes, initialCameras } from '../data/agriData';
+import { UserAvatar } from '../components/UserAvatar';
 
 interface FarmerDashboardProps {
   setActiveTab: (tab: string) => void;
@@ -47,10 +48,12 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ setActiveTab, 
       <div className="glass-card p-6 sm:p-8 rounded-3xl border-2 border-emerald-100 bg-gradient-to-r from-emerald-50/90 via-white to-green-50/80 shadow-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-start gap-4">
-            <img
-              src={user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80'}
-              alt="Farmer Profile"
-              className="w-16 h-16 rounded-2xl object-cover ring-2 ring-emerald-500 shadow-md"
+            <UserAvatar
+              name={user?.name}
+              avatar={user?.avatar}
+              className="w-16 h-16 rounded-2xl ring-2 ring-emerald-500 shadow-md"
+              textClassName="text-xl"
+              iconClassName="w-8 h-8"
             />
             <div className="space-y-1">
               <div className="flex items-center gap-2">
